@@ -5,8 +5,10 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.aabbou.ppm.entity.BackLog;
 import com.aabbou.ppm.entity.Project;
 import com.aabbou.ppm.exceptions.ProjectIdException;
+import com.aabbou.ppm.repository.BackLogRepository;
 import com.aabbou.ppm.repository.ProjectRepository;
 import com.aabbou.ppm.service.IProjectService;
 
@@ -15,6 +17,9 @@ public class ProjectService  implements IProjectService{
 	
 	@Autowired
 	private ProjectRepository projectRepository;
+	
+	@Autowired
+	private BackLogRepository backLogRepository;
 
 	@Override
 	public List<Project> findAllProjects() {
@@ -23,11 +28,24 @@ public class ProjectService  implements IProjectService{
 
 	@Override
 	public Project saveOrUpdateProject(Project project) {
+		
+		final String projectId = project.getProjectIdentifier().toUpperCase();
         try{
-            project.setProjectIdentifier(project.getProjectIdentifier().toUpperCase());
+            project.setProjectIdentifier(projectId);
+
+            if(project.getId()==null){ //create new 
+                BackLog backlog = new BackLog();
+                project.setBacklog(backlog);
+                backlog.setProject(project);
+                backlog.setProjectIdentifier(projectId);
+            }
+
+            if(project.getId()!=null){//update
+                project.setBacklog(backLogRepository.findByProjectIdentifier(projectId));
+            }
             return projectRepository.save(project);
         }catch (Exception e){
-            throw new ProjectIdException("Project ID '"+project.getProjectIdentifier().toUpperCase()+"' already exists");
+            throw new ProjectIdException("Project ID '"+projectId+"' already exists");
         }
 	}
 
