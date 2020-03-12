@@ -13,11 +13,11 @@ import com.aabbou.ppm.repository.ProjectRepository;
 import com.aabbou.ppm.service.IProjectService;
 
 @Service
-public class ProjectService  implements IProjectService{
-	
+public class ProjectService implements IProjectService {
+
 	@Autowired
 	private ProjectRepository projectRepository;
-	
+
 	@Autowired
 	private BackLogRepository backLogRepository;
 
@@ -28,62 +28,64 @@ public class ProjectService  implements IProjectService{
 
 	@Override
 	public Project saveOrUpdateProject(Project project) {
-		
+
 		final String projectId = project.getProjectIdentifier().toUpperCase();
-        try{
-            project.setProjectIdentifier(projectId);
+		try {
+			project.setProjectIdentifier(projectId);
 
-            if(project.getId()==null){ //create new 
-                BackLog backlog = new BackLog();
-                project.setBacklog(backlog);
-                backlog.setProject(project);
-                backlog.setProjectIdentifier(projectId);
-            }
+			if (project.getId() == null || project.getId() == 0) { // create new
+				BackLog backlog = new BackLog();
+				project.setBacklog(backlog);
+				backlog.setProject(project);
+				backlog.setProjectIdentifier(projectId);
+			}
 
-            if(project.getId()!=null){//update
-                project.setBacklog(backLogRepository.findByProjectIdentifier(projectId));
-            }
-            return projectRepository.save(project);
-        }catch (Exception e){
-            throw new ProjectIdException("Project ID '"+projectId+"' already exists");
-        }
+			if (project.getId() != null && project.getId() != 0) {// update
+				project.setBacklog(
+						backLogRepository.findByProjectIdentifier(projectId));
+			}
+			return projectRepository.save(project);
+		} catch (Exception e) {
+			throw new ProjectIdException(
+					"Project ID '" + projectId + "' already exists");
+		}
 	}
-
 
 	@Override
 	public void deleteProjectById(Long id) {
 		Project project = findProjectById(id);
-	    projectRepository.delete(project);
-		
+		projectRepository.delete(project);
+
 	}
-	
+
 	@Override
 	public void deleteProjectByIdentifier(String projectId) {
 		Project project = findProjectByIdentifier(projectId);
-	    projectRepository.delete(project);
-		
+		projectRepository.delete(project);
+
 	}
 
 	@Override
 	public Project findProjectById(Long id) {
 		Project project = projectRepository.getOne(id);
-		if(project == null ) {
-			throw new ProjectIdException("Project ID '"+ id +"' does not exist");
-		}else {
+		if (project == null) {
+			throw new ProjectIdException(
+					"Project ID '" + id + "' does not exist");
+		} else {
 			return project;
 		}
 	}
 
 	@Override
 	public Project findProjectByIdentifier(String projectId) {
-		Project project = projectRepository.findByProjectIdentifier(projectId.toUpperCase());
-		if(project == null ) {
-			throw new ProjectIdException("Project ID '"+ projectId.toUpperCase() +"' does not exist");
-		}else {
+		Project project = projectRepository
+				.findByProjectIdentifier(projectId.toUpperCase());
+		if (project == null) {
+			throw new ProjectIdException("Project ID '"
+					+ projectId.toUpperCase() + "' does not exist");
+		} else {
 			return project;
 		}
 	}
-
-
 
 }

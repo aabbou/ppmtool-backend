@@ -48,8 +48,9 @@ public class ProjectTaskService implements IProjectTaskService {
 		projectTask.setProjectIdentifier(projectIdentifier.toUpperCase());
 
 		// INITIAL priority when priority null
-		if (projectTask.getPriority() == null) {
-			projectTask.setPriority(0);
+		if (projectTask.getPriority() == null
+				|| projectTask.getPriority() == 0) {
+			projectTask.setPriority(3);
 		}
 		// INITIAL status when status is null
 		if (projectTask.getStatus() == "" || projectTask.getStatus() == null) {
@@ -107,6 +108,15 @@ public class ProjectTaskService implements IProjectTaskService {
 				.findByProjectSequence(pt_id);
 
 		projectTask = updatedTask;
+
+		if (projectTask.getStatus() == "" || projectTask.getStatus() == null) {
+			projectTask.setStatus("TO_DO");
+		}
+
+		if (projectTask.getPriority() == null
+				|| projectTask.getPriority() == 0) {
+			projectTask.setPriority(3);
+		}
 
 		return projectTaskRepository.save(projectTask);
 	}

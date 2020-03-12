@@ -14,6 +14,7 @@ import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.validation.constraints.NotBlank;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
@@ -23,18 +24,24 @@ public class ProjectTask {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(updatable = false)
+	@Column(name = "project_sequence", updatable = false)
 	private String projectSequence;
 
 	@NotBlank(message = "Please include a project summary")
+	@Column(name = "summary")
 	private String summary;
 
+	@Column(name = "acceptance_criteria")
 	private String acceptanceCriteria;
 
+	@Column(name = "status")
 	private String status;
 
+	@Column(name = "priority")
 	private Integer priority;
 
+	@JsonFormat(pattern = "yyyy-MM-dd")
+	@Column(name = "due_date")
 	private Date dueDate;
 
 	// ManyToOne with Backlog
@@ -43,9 +50,15 @@ public class ProjectTask {
 	@JsonIgnore
 	private BackLog backlog;
 
-	@Column(updatable = false)
+	@Column(name = "project_identifier", updatable = false)
 	private String projectIdentifier;
+
+	@JsonFormat(pattern = "yyyy-MM-dd")
+	@Column(name = "created_At", updatable = false)
 	private Date create_At;
+
+	@JsonFormat(pattern = "yyyy-MM-dd")
+	@Column(name = "updated_At")
 	private Date update_At;
 
 	public ProjectTask() {
