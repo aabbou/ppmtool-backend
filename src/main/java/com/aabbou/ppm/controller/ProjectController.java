@@ -1,5 +1,6 @@
 package com.aabbou.ppm.controller;
 
+import java.security.Principal;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -26,55 +27,57 @@ import com.aabbou.ppm.service.impl.MapValidationErrorService;
 @RequestMapping("/api/projects")
 @CrossOrigin
 public class ProjectController {
-	
-	@Autowired
-	private IProjectService projectService;
-	
-	@Autowired
-	private MapValidationErrorService mapValidationErrorService;
-	
-	@GetMapping("/all")
-	public List<Project> getAllProjects() {
-		return projectService.findAllProjects();	
-	}
-	
-	
-	@GetMapping("/{projectId}")
-	public ResponseEntity<?> getProjectByIdentifier(@PathVariable String projectId) {
-		Project project =  projectService.findProjectByIdentifier(projectId);
-		
-	    return new ResponseEntity<Project>(project, HttpStatus.OK);
-			
-	}
-	
+
+    @Autowired
+    private IProjectService projectService;
+
+    @Autowired
+    private MapValidationErrorService mapValidationErrorService;
+
+    @GetMapping("/all")
+    public List<Project> getAllProjects(Principal principal) {
+	return projectService.findAllProjects(principal.getName());
+    }
+
+    @GetMapping("/{projectId}")
+    public ResponseEntity<?> getProjectByIdentifier(@PathVariable String projectId, Principal principal) {
+	Project project = projectService.findProjectByIdentifier(projectId, principal.getName());
+
+	return new ResponseEntity<Project>(project, HttpStatus.OK);
+
+    }
+
     @PostMapping("")
-    public ResponseEntity<?> createNewProject(@Valid @RequestBody Project project, BindingResult result){
-        //Validate body request
-    	ResponseEntity<?> errorMap = mapValidationErrorService.mapValidationService(result);
-    	if(errorMap != null ) return errorMap;
-    	
-    	//persist in db
-        Project project1 = projectService.saveOrUpdateProject(project);
-        return new ResponseEntity<Project>(project1, HttpStatus.CREATED);
+    public ResponseEntity<?> createNewProject(@Valid @RequestBody Project project, BindingResult result,
+	    Principal principal) {
+	// Validate body request
+	ResponseEntity<?> errorMap = mapValidationErrorService.mapValidationService(result);
+	if (errorMap != null)
+	    return errorMap;
+
+	// persist in db
+	Project project1 = projectService.saveOrUpdateProject(project, principal.getName());
+	return new ResponseEntity<Project>(project1, HttpStatus.CREATED);
     }
-    
+
     @PutMapping("")
-    public ResponseEntity<?> updateProject(@Valid @RequestBody Project project, BindingResult result){
+    public ResponseEntity<?> updateProject(@Valid @RequestBody Project project, BindingResult result,
+	    Principal principal) {
 
-        //Validate body request
-    	ResponseEntity<?> errorMap = mapValidationErrorService.mapValidationService(result);
-    	if(errorMap != null ) return errorMap;
+	// Validate body request
+	ResponseEntity<?> errorMap = mapValidationErrorService.mapValidationService(result);
+	if (errorMap != null)
+	    return errorMap;
 
-        Project project1 = projectService.saveOrUpdateProject(project);
-        return new ResponseEntity<Project>(project1, HttpStatus.CREATED);
+	Project project1 = projectService.saveOrUpdateProject(project, principal.getName());
+	return new ResponseEntity<Project>(project1, HttpStatus.CREATED);
     }
-    
+
     @DeleteMapping("/{projectId}")
-    public ResponseEntity<?> deleteProjectById(@PathVariable String projectId){
-    	projectService.deleteProjectByIdentifier(projectId);
-    	
-    	return new ResponseEntity<String>("Project with ID: '"+projectId+"' was deleted", HttpStatus.OK);
+    public ResponseEntity<?> deleteProjectById(@PathVariable String projectId, Principal principal) {
+	projectService.deleteProjectByIdentifier(projectId, principal.getName());
+
+	return new ResponseEntity<String>("Project with ID: '" + projectId + "' was deleted", HttpStatus.OK);
     }
-	
 
 }

@@ -5,17 +5,13 @@ import java.util.List;
 import com.aabbou.ppm.entity.Project;
 
 public interface IProjectService {
-	
-	List<Project> findAllProjects();
-	
-	Project saveOrUpdateProject(Project project); 
-	
-	Project findProjectById(Long id); 
-	
-	void deleteProjectById(Long id);
-	
-	void deleteProjectByIdentifier(String projectId);
 
-	Project findProjectByIdentifier(String projectId); 
+    List<Project> findAllProjects(String username);
+
+    Project saveOrUpdateProject(Project project, String username);
+
+    void deleteProjectByIdentifier(String projectId, String username);
+
+    Project findProjectByIdentifier(String projectId, String username);
 
 }

@@ -9,6 +9,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
@@ -21,136 +22,154 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
-@Table(name="project")
-@JsonIgnoreProperties({"hibernateLazyInitializer"})
+@Table(name = "project")
+@JsonIgnoreProperties({ "hibernateLazyInitializer" })
 public class Project {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="id")
+    @Column(name = "id")
     private Long id;
-    
-    @NotBlank(message="Project name is required")
-    @Column(name="project_name")
+
+    @NotBlank(message = "Project name is required")
+    @Column(name = "project_name")
     private String projectName;
-   
-    @NotBlank(message="Project identifier is required")
-    @Size(min=4,max=5,message="Please use 4 to 5 characters")
-    @Column(name="project_identifier",updatable=false,unique=true)
+
+    @NotBlank(message = "Project identifier is required")
+    @Size(min = 4, max = 5, message = "Please use 4 to 5 characters")
+    @Column(name = "project_identifier", updatable = false, unique = true)
     private String projectIdentifier;
-    
-    
-    @NotBlank(message="Project description is required")
-    @Column(name="description")
+
+    @NotBlank(message = "Project description is required")
+    @Column(name = "description")
     private String description;
-    
+
     @JsonFormat(pattern = "yyyy-MM-dd")
-    @Column(name="start_date")
+    @Column(name = "start_date")
     private Date start_date;
-    
+
     @JsonFormat(pattern = "yyyy-MM-dd")
-    @Column(name="end_date")
+    @Column(name = "end_date")
     private Date end_date;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
-    @Column(name="created_At",updatable=false)
+    @Column(name = "created_At", updatable = false)
     private Date created_At;
-    
+
     @JsonFormat(pattern = "yyyy-MM-dd")
-    @Column(name="updated_At")
+    @Column(name = "updated_At")
     private Date updated_At;
-    
+
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "project")
     @JsonIgnore
     private BackLog backlog;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
+    private User user;
+
+    @Column(name = "project_leader")
+    private String projectLeader;
 
     public Project() {
     }
 
     public Long getId() {
-        return id;
+	return id;
     }
 
     public void setId(Long id) {
-        this.id = id;
+	this.id = id;
     }
 
     public String getProjectName() {
-        return projectName;
+	return projectName;
     }
 
     public void setProjectName(String projectName) {
-        this.projectName = projectName;
+	this.projectName = projectName;
     }
 
     public String getProjectIdentifier() {
-        return projectIdentifier;
+	return projectIdentifier;
     }
 
     public void setProjectIdentifier(String projectIdentifier) {
-        this.projectIdentifier = projectIdentifier;
+	this.projectIdentifier = projectIdentifier;
     }
 
     public String getDescription() {
-        return description;
+	return description;
     }
 
     public void setDescription(String description) {
-        this.description = description;
+	this.description = description;
     }
 
     public Date getStart_date() {
-        return start_date;
+	return start_date;
     }
 
     public void setStart_date(Date start_date) {
-        this.start_date = start_date;
+	this.start_date = start_date;
     }
 
     public Date getEnd_date() {
-        return end_date;
+	return end_date;
     }
 
     public void setEnd_date(Date end_date) {
-        this.end_date = end_date;
+	this.end_date = end_date;
     }
 
     public Date getCreated_At() {
-        return created_At;
+	return created_At;
     }
 
     public void setCreated_At(Date created_At) {
-        this.created_At = created_At;
+	this.created_At = created_At;
     }
 
     public Date getUpdated_At() {
-        return updated_At;
+	return updated_At;
     }
 
     public void setUpdated_At(Date updated_At) {
-        this.updated_At = updated_At;
+	this.updated_At = updated_At;
     }
-    
 
     public BackLog getBacklog() {
-		return backlog;
-	}
+	return backlog;
+    }
 
-	public void setBacklog(BackLog backlog) {
-		this.backlog = backlog;
-	}
+    public void setBacklog(BackLog backlog) {
+	this.backlog = backlog;
+    }
 
-	@PrePersist
-    protected void onCreate(){
-        this.created_At = new Date();
+    public User getUser() {
+	return user;
+    }
+
+    public void setUser(User user) {
+	this.user = user;
+    }
+
+    public String getProjectLeader() {
+	return projectLeader;
+    }
+
+    public void setProjectLeader(String projectLeader) {
+	this.projectLeader = projectLeader;
+    }
+
+    @PrePersist
+    protected void onCreate() {
+	this.created_At = new Date();
     }
 
     @PreUpdate
-    protected void onUpdate(){
-        this.updated_At = new Date();
+    protected void onUpdate() {
+	this.updated_At = new Date();
     }
-    
-    
 
 }
-
